@@ -1,0 +1,70 @@
+
+Summary of Findings in the NMAP Scan
+Live Hosts Detected:
+
+More than 40 live hosts were detected with open ports.
+Open Ports Identified:
+
+| Port | Protocol | Service             | No. of Hosts | Risk Level | Security Risk Description                                    |
+| ---- | -------- | ------------------- | ------------ | ---------- | ------------------------------------------------------------ |
+| 22   | TCP      | SSH                 | 1            | Medium     | Could be brute-forced if weak creds                          |
+| 23   | TCP      | Telnet              | \~35+        | High       | Legacy protocol; no encryption; credentials can be sniffed   |
+| 53   | TCP      | DNS                 | 1            | Medium     | Might allow zone transfers (needs testing)                   |
+| 80   | TCP      | HTTP                | 4            | Medium     | Unencrypted web traffic; vulnerable to MITM                  |
+| 113  | TCP      | IDENT               | 1 (Closed)   | Low        | Generally not a threat unless misconfigured                  |
+| 443  | TCP      | HTTPS               | 1            | Low        | Secure, but cert misconfig possible                          |
+| 1000 | TCP      | Cadlock? (Uncommon) | 1            | Medium     | Unknown service; could be custom and unprotected             |
+| 135  | TCP      | MS RPC              | 4            | High       | Used by Windows; often targeted in SMB attacks               |
+| 139  | TCP      | NetBIOS-SSN         | 4            | High       | Legacy Windows file-sharing; vulnerable to sniffing/spoofing |
+| 445  | TCP      | Microsoft-DS        | 4            | High       | SMBv1 issues, lateral movement risk                          |
+| 1433 | TCP      | MS SQL Server       | 4            | High       | Database exposure, SQL injection, brute force risk           |
+| 5357 | TCP      | WSDAPI              | 4            | Medium     | Web Services; limited risk, may leak info                    |
+| 5800 | TCP      | VNC-HTTP            | 4            | High       | Remote desktop; if exposed, can be hijacked                  |
+| 5900 | TCP      | VNC                 | 4            | High       | Same as above; often no auth or weak creds                   |
+| 7070 | TCP      | RealServer          | 2            | Medium     | Streaming service; may allow data leaks                      |
+| 8081 | TCP      | BlackICE            | 4            | Medium     | Admin panels or services often run here                      |
+| 7496 | TCP      | Unknown             | 2            | Medium     | Could be custom software; needs investigation                |
+
+---
+Security Risks
+
+1. Telnet (port 23) - HIGH RISK
+
+    No encryption (username/password in plaintext)
+    Very common legacy service; replaced by SSH
+    Present on 35+ hosts — a massive exposure
+
+2. SMB/NetBIOS (ports 135, 139, 445) - HIGH RISK
+
+    Legacy Windows services
+    Vulnerable to attacks like EternalBlue (WannaCry)
+
+3. SQL Server (port 1433) - HIGH RISK
+
+    Publicly exposed DB service
+    Can be targeted for brute-force and SQL injection
+
+4. VNC (ports 5800/5900) - HIGH RISK
+
+    Exposes GUI desktops
+    Weak/no auth can allow full device access
+
+5. HTTP (port 80) - MEDIUM RISK
+
+    Unencrypted communication
+    Can be intercepted on local/WiFi networks
+
+---
+
+Suggestions for Remediation
+
+| Action Item                                 | Recommended Fix                  |
+| ------------------------------------------- | -------------------------------- |
+| Replace Telnet with SSH                     | Disable port 23 entirely         |
+| Use firewalls to restrict internal services | Limit SMB, SQL, VNC access       |
+| Update and patch all services               | Close known CVEs                 |
+| Enforce strong credentials on all systems   | Brute-force resistance           |
+| Monitor unusual activity via SIEM           | Detect lateral movement or scans |
+
+---
+
